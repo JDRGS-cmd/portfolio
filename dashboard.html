@@ -326,7 +326,7 @@ function applyOperations(basePositions, ops){
   const pos = basePositions.map(p=>({...p,
     qty:     parseFloat(p.Quantite)||0,
     pam:     parseFloat(p.PAM_EUR)||0,
-    investi: parseFloat(p.Valeur_Investie_EUR)||0,
+    investi: (parseFloat(p.PAM_EUR)||0)*(parseFloat(p.Quantite)||0),
     realise: 0,
   }));
 
@@ -466,7 +466,8 @@ function calcPf(posList){
     const prix=getPriceEur(p);
     const prev=getPrevCloseEur(p);
     valeur  +=prix*p.qty;
-    investi +=p.investi;
+    // Toujours utiliser PAM×qty pour cohérence (évite écarts d'arrondi CSV)
+    investi +=p.pam*p.qty;
     realise +=(p.realise||0);
     if(prev!=null) changeDay+=(prix-prev)*p.qty;
   }
@@ -520,8 +521,9 @@ function renderTable(tbodyId,theadId,posList,icoClass,totalV){
     const prix  =getPriceEur(p);
     const prev  =getPrevCloseEur(p);
     const valeur=prix*p.qty;
-    const pvEur =valeur-p.investi;
-    const pvPct =p.investi>0?(pvEur/p.investi)*100:0;
+    const base_investi=p.pam*p.qty;
+    const pvEur =valeur-base_investi;
+    const pvPct =base_investi>0?(pvEur/base_investi)*100:0;
     const poids =totalV>0?(valeur/totalV)*100:0;
     const qty   =p.qty<1?fmt(p.qty,6):fmt(p.qty,p.qty<10?3:2);
     const pamFmt=p.pam>1000?fmt(p.pam,0):fmt(p.pam,2);
