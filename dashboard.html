@@ -326,6 +326,7 @@ function applyOperations(basePositions, ops){
   const pos = basePositions.map(p=>({...p,
     qty:     parseFloat(p.Quantite)||0,
     pam:     parseFloat(p.PAM_EUR)||0,
+    refPrix: parseFloat(p.RefPrix_EUR)||0,
     investi: (parseFloat(p.PAM_EUR)||0)*(parseFloat(p.Quantite)||0),
     realise: 0,
   }));
@@ -439,7 +440,7 @@ function getTicker(p){ return ISIN_TO_TICKER[p.ISIN]||p.ISIN; }
 function getPriceEur(p){
   const ticker=getTicker(p);
   const c=priceCache[ticker]||priceCache[p.ISIN];
-  if(!c) return p.pam;
+  if(!c) return p.refPrix||p.pam;
   if(p.Portefeuille==='CRYPTO') return c.price;
   if(GBP_TICKERS.includes(ticker)) return (c.price/100)*gbpEur;
   if(p.Portefeuille==='CTO') return c.price*usdEur;
