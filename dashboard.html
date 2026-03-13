@@ -605,7 +605,9 @@ function renderAll(){
   const obligFacUsd= OBLIGATIONS_STATIC.reduce((s,o)=>s+o.faciale_usd,0);
   const totalV     = cto.valeur+pea.valeur+obligInvEur+crypto.valeur;
   const totalInvesti=cto.investi+pea.investi+obligInvEur+crypto.investi;
-  const totalLatent = cto.pvLatent+pea.pvLatent+crypto.pvLatent;
+  // PnL obligataire = valeur faciale en EUR - montant investi
+  const obligPvLatent = obligFacUsd*usdEur - obligInvEur;
+  const totalLatent = cto.pvLatent+pea.pvLatent+crypto.pvLatent+obligPvLatent;
   const totalRealise= cto.realise+pea.realise+crypto.realise;
   const totalPvTotal= totalLatent+totalRealise;
   const totalPvPct  = totalInvesti>0?(totalPvTotal/totalInvesti)*100:0;
@@ -702,11 +704,22 @@ function renderAll(){
     }
   }
 
-  // Oblig card
+  // Oblig card — affiche PnL maturité dans onglet total
   document.getElementById('oblig-val').textContent=fmtUsd(obligFacUsd);
-  document.getElementById('oblig-investi').textContent='Valeur faciale · Coupon août 2026';
-  document.getElementById('oblig-perf').textContent='📅 10 août 2026';
-  document.getElementById('oblig-perf').className='badge neu';
+  if(currentTab==='total'){
+    document.getElementById('oblig-investi').innerHTML='Latent à maturité : <strong>'+fmtChg(obligPvLatent)+'</strong>';
+  } else {
+    document.getElementById('oblig-investi').textContent='Valeur faciale · Coupon août 2026';
+  }
+  if(currentTab==='total'){
+    const obligPvPct=obligInvEur>0?(obligPvLatent/obligInvEur)*100:0;
+    document.getElementById('oblig-perf').textContent=fmtPct(obligPvPct);
+    document.getElementById('oblig-perf').className='badge '+(obligPvLatent>0?'pos':'neg');
+  } else {
+    document.getElementById('oblig-perf').textContent='📅 10 août 2026';
+    document.getElementById('oblig-perf').className='badge neu';
+  }
+
 
   // Totaux
   document.getElementById('cnt-cto').textContent=`${ctoList.length} positions`;
