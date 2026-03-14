@@ -154,7 +154,6 @@ td.r{text-align:right;}
 
 <div class="tabs">
   <div class="tab active" onclick="setTab('today',this)">Aujourd'hui</div>
-  <div class="tab" onclick="setTab('week',this)">Cette semaine</div>
   <div class="tab" onclick="setTab('total',this)">Depuis l'achat</div>
 </div>
 
@@ -507,7 +506,6 @@ function updateDonut(ctoV,peaV,obligV,cryptoV){
 // ══════════════════════════════════════════════════════════════
 const COLS={
   today:['#','Titre','Cours','Qté','Var. jour','Var. (€)','Valeur','Poids'],
-  week: ['#','Titre','Cours','Qté','Var. sem.','Var. (€)','Valeur','Poids'],
   total:['#','Titre','PAM','Cours actuel','Qté','Valeur','Latent %','Latent €'],
 };
 
@@ -657,7 +655,7 @@ function renderAll(){
     document.getElementById('kpiWorstSub').textContent=fmtPct(worst.pvPct)+' depuis achat';
     document.getElementById('kpiWorstSub').className=`kpi-sub ${cls(worst.pvEur)}`;
   } else {
-    const lbl=currentTab==='today'?'PnL du jour':'PnL de la semaine';
+    const lbl='PnL du jour';
     document.getElementById('kpiLabel1').textContent=lbl;
     document.getElementById('kpiPerfVal').textContent=fmtPct(totalDayPct);
     document.getElementById('kpiPerfVal').className=`kpi-value ${cls(totalDayPct)}`;
